@@ -1,16 +1,17 @@
-import type { NaverPlace } from "./naver";
+import type { Place } from "./places";
 import type { Preferences, Visit } from "@/db/schema";
 import { haversineMeters } from "./utils";
 
-export type Candidate = NaverPlace & {
+export type Candidate = Place & {
   distanceM: number;
   score: number;
+  reviewCount?: number;
 };
 
 type RecommendArgs = {
   origin: { lat: number; lng: number };
   radiusM: number;
-  candidates: NaverPlace[];
+  candidates: Place[];
   preferences: Pick<
     Preferences,
     "favoriteCuisines" | "dislikedCuisines" | "dietary"
@@ -18,6 +19,7 @@ type RecommendArgs = {
   recentVisits: Pick<Visit, "naverPlaceId" | "category" | "visitedAt">[];
   historyWindowDays: number;
   topK?: number;
+  mode?: "smart" | "random";
 };
 
 const PORK_HINTS = ["돼지", "삼겹", "포크", "pork", "bacon", "베이컨"];
@@ -46,13 +48,13 @@ function matchAny(haystack: string, needles: string[]) {
   return needles.some((n) => h.includes(n.toLowerCase()));
 }
 
-function categoryMatches(place: NaverPlace, terms: string[]): boolean {
+function categoryMatches(place: Place, terms: string[]): boolean {
   if (terms.length === 0) return false;
   const blob = `${place.name} ${place.category}`.toLowerCase();
   return terms.some((t) => blob.includes(t.toLowerCase()));
 }
 
-function topCategory(place: NaverPlace): string {
+function topCategory(place: Place): string {
   return place.category.split(">")[0]?.trim() ?? "";
 }
 
@@ -64,6 +66,7 @@ export function recommend({
   recentVisits,
   historyWindowDays,
   topK = 10,
+  mode = "smart",
 }: RecommendArgs): Candidate[] {
   const now = Date.now();
   const historyWindowMs = historyWindowDays * 24 * 60 * 60 * 1000;
@@ -89,7 +92,8 @@ export function recommend({
 
   const withDistance = candidates.map((p) => ({
     ...p,
-    distanceM: haversineMeters(origin, { lat: p.lat, lng: p.lng }),
+    distanceM:
+      p.distanceM ?? haversineMeters(origin, { lat: p.lat, lng: p.lng }),
   }));
 
   const scored: Candidate[] = withDistance
@@ -108,10 +112,12 @@ export function recommend({
     })
     .map((p) => {
       let score = 0;
-      if (categoryMatches(p, favorites)) score += 3;
-      if (categoryMatches(p, dislikes)) score -= 5;
-      const recent = veryRecentTopCats.get(topCategory(p)) ?? 0;
-      score -= recent * 2;
+      if (mode === "smart") {
+        if (categoryMatches(p, favorites)) score += 3;
+        if (categoryMatches(p, dislikes)) score -= 5;
+        const recent = veryRecentTopCats.get(topCategory(p)) ?? 0;
+        score -= recent * 2;
+      }
       score += Math.random();
       return { ...p, score };
     });

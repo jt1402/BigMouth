@@ -67,7 +67,33 @@ export const visits = pgTable(
   ],
 );
 
+export const favorites = pgTable(
+  "favorites",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    kakaoPlaceId: text("kakao_place_id").notNull(),
+    name: text("name").notNull(),
+    address: text("address"),
+    category: text("category"),
+    lat: real("lat"),
+    lng: real("lng"),
+    link: text("link"),
+    likedAt: timestamp("liked_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("favorites_user_place_idx").on(t.userId, t.kakaoPlaceId),
+    index("favorites_user_liked_idx").on(t.userId, t.likedAt),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
 export type Preferences = typeof preferences.$inferSelect;
 export type Visit = typeof visits.$inferSelect;
 export type NewVisit = typeof visits.$inferInsert;
+export type Favorite = typeof favorites.$inferSelect;
+export type NewFavorite = typeof favorites.$inferInsert;

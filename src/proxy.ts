@@ -9,6 +9,7 @@ const isProtectedPage = createRouteMatcher([
   "/(en|ko)?/recommend(.*)",
   "/(en|ko)?/history(.*)",
   "/(en|ko)?/preferences(.*)",
+  "/(en|ko)?/favorites(.*)",
 ]);
 
 const isProtectedApi = createRouteMatcher([
@@ -16,6 +17,8 @@ const isProtectedApi = createRouteMatcher([
   "/api/visits(.*)",
   "/api/history(.*)",
   "/api/preferences(.*)",
+  "/api/favorites(.*)",
+  "/api/restaurant-image(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

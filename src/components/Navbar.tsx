@@ -16,6 +16,9 @@ export async function Navbar() {
             <Link href="/recommend" className="hover:underline">
               {t("Nav.recommend")}
             </Link>
+            <Link href="/favorites" className="hover:underline">
+              {t("Nav.favorites")}
+            </Link>
             <Link href="/history" className="hover:underline">
               {t("Nav.history")}
             </Link>

@@ -23,14 +23,23 @@ declare global {
   }
 }
 
-function whenKakaoReady(cb: () => void) {
+function isKakaoSdkReady(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.kakao !== "undefined" &&
+    typeof window.kakao.maps !== "undefined" &&
+    typeof window.kakao.maps.load === "function"
+  );
+}
+
+function waitForKakaoSdk(cb: () => void) {
   if (typeof window === "undefined") return;
-  if (window.kakao?.maps?.StaticMap) {
+  if (isKakaoSdkReady()) {
     cb();
     return;
   }
   const t = setInterval(() => {
-    if (window.kakao?.maps?.StaticMap) {
+    if (isKakaoSdkReady()) {
       clearInterval(t);
       cb();
     }
@@ -42,26 +51,27 @@ export function MiniMap({ center }: { center: LatLng }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    whenKakaoReady(() => setReady(true));
+    waitForKakaoSdk(() => {
+      window.kakao.maps.load(() => setReady(true));
+    });
   }, []);
 
   useEffect(() => {
     if (!ready || !ref.current) return;
     const k = window.kakao.maps;
-    k.load(() => {
-      const pos = new k.LatLng(center.lat, center.lng);
-      new k.StaticMap(ref.current!, {
-        center: pos,
-        level: 3,
-        marker: { position: pos },
-      });
+    const pos = new k.LatLng(center.lat, center.lng);
+    ref.current.innerHTML = "";
+    new k.StaticMap(ref.current, {
+      center: pos,
+      level: 3,
+      marker: { position: pos },
     });
   }, [ready, center.lat, center.lng]);
 
   return (
     <div
       ref={ref}
-      className="h-32 sm:h-36 w-full bg-zinc-200 dark:bg-zinc-800"
+      className="aspect-[16/9] w-full bg-zinc-200 dark:bg-zinc-800 [&_*]:pointer-events-none"
     />
   );
 }

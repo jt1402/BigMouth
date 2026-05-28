@@ -6,10 +6,16 @@
   "Nav": {
     "home": "홈",
     "recommend": "추천",
+    "favorites": "찜",
     "history": "기록",
     "preferences": "설정",
     "signIn": "로그인",
     "signOut": "로그아웃"
+  },
+  "Favorites": {
+    "title": "찜한 가게",
+    "empty": "아직 찜한 곳이 없어요. 추천 카드의 하트를 눌러 저장해 보세요.",
+    "remove": "삭제"
   },
   "Home": {
     "title": "오늘 뭐 먹지?",
@@ -22,6 +28,7 @@
     "mealType": "어떤 종류가 끌려요?",
     "anyMeal": "아무거나",
     "submit": "추천받기",
+    "relocate": "위치 갱신",
     "signInToStart": "로그인하면 방문 기록을 바탕으로 더 똑똑하게 추천해 드려요."
   },
   "Recommend": {
@@ -29,10 +36,23 @@
     "empty": "근처에 새로운 곳이 없어요. 반경을 늘리거나 기록을 비워보세요.",
     "again": "다시 고르기",
     "markVisited": "여기서 먹었어요",
+    "goThere": "길찾기",
+    "like": "찜하기",
+    "unlike": "찜 해제",
     "rate": "평점",
     "distance": "{meters} m",
     "category": "분류",
-    "loading": "고르는 중…"
+    "loading": "고르는 중…",
+    "reviews": "리뷰 {count}",
+    "filtersHeader": "필터",
+    "anyMeal": "전체",
+    "sort": {
+      "label": "정렬",
+      "smart": "추천",
+      "distance": "거리순",
+      "popular": "인기순",
+      "random": "랜덤"
+    }
   },
   "History": {
     "title": "방문 기록",

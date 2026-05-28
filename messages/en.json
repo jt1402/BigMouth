@@ -6,10 +6,16 @@
   "Nav": {
     "home": "Home",
     "recommend": "Recommend",
+    "favorites": "Favorites",
     "history": "History",
     "preferences": "Preferences",
     "signIn": "Sign in",
     "signOut": "Sign out"
+  },
+  "Favorites": {
+    "title": "Saved places",
+    "empty": "Nothing saved yet. Tap the heart on a recommendation to save it.",
+    "remove": "Remove"
   },
   "Home": {
     "title": "What's for lunch?",
@@ -22,6 +28,7 @@
     "mealType": "What are you in the mood for?",
     "anyMeal": "Anything",
     "submit": "Find me food",
+    "relocate": "Update location",
     "signInToStart": "Sign in to track what you've eaten and get smarter picks."
   },
   "Recommend": {
@@ -29,10 +36,23 @@
     "empty": "No new places nearby. Try widening the radius or clearing history.",
     "again": "Pick again",
     "markVisited": "I ate here",
+    "goThere": "Get directions",
+    "like": "Save to favorites",
+    "unlike": "Remove from favorites",
     "rate": "Rate",
     "distance": "{meters} m away",
     "category": "Category",
-    "loading": "Picking a place…"
+    "loading": "Picking a place…",
+    "reviews": "{count} mentions",
+    "filtersHeader": "Refine",
+    "anyMeal": "Any",
+    "sort": {
+      "label": "Sort by",
+      "smart": "For you",
+      "distance": "Distance",
+      "popular": "Popular",
+      "random": "Random"
+    }
   },
   "History": {
     "title": "Where you've been",

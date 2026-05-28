@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { NaverMap } from "./NaverMap";
+import { KakaoMap } from "./KakaoMap";
 import type { Candidate } from "@/lib/recommender";
 
 export function RecommendClient({
@@ -120,7 +120,7 @@ export function RecommendClient({
         </button>
       </ul>
       <div className="h-[480px] lg:h-auto lg:min-h-[480px] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800">
-        <NaverMap center={{ lat, lng }} places={items} />
+        <KakaoMap center={{ lat, lng }} places={items} />
       </div>
     </div>
   );

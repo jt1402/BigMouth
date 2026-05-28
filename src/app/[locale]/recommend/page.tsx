@@ -1,5 +1,6 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { redirect } from "@/i18n/navigation";
 import { RecommendClient } from "@/components/RecommendClient";
 
 export default async function RecommendPage({
@@ -31,11 +32,7 @@ export default async function RecommendPage({
       : "smart";
 
   if (lat === null || lng === null || !Number.isFinite(lat) || !Number.isFinite(lng)) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-        <p>{t("empty")}</p>
-      </div>
-    );
+    redirect({ href: "/", locale });
   }
 
   return (
@@ -47,8 +44,8 @@ export default async function RecommendPage({
         fallback={<p className="mt-6 text-zinc-500">{t("loading")}</p>}
       >
         <RecommendClient
-          lat={lat}
-          lng={lng}
+          lat={lat as number}
+          lng={lng as number}
           radius={radius}
           query={query}
           sort={sort}

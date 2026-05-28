@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -39,6 +40,7 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const messages = await getMessages();
+  const kakaoKey = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY;
 
   return (
     <ClerkProvider>
@@ -47,6 +49,12 @@ export default async function LocaleLayout({
         className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       >
         <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+          {kakaoKey && (
+            <Script
+              src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false`}
+              strategy="afterInteractive"
+            />
+          )}
           <NextIntlClientProvider locale={locale} messages={messages}>
             <Navbar />
             <main className="flex-1 w-full">{children}</main>

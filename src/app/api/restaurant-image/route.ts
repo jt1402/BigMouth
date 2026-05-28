@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 import { z } from "zod";
-import { requireCurrentDbUser } from "@/lib/user";
 
 const QuerySchema = z.object({
-  q: z.string().min(1).max(80),
   id: z.string().min(1).max(40).optional(),
 });
 
@@ -35,26 +34,34 @@ async function fetchOgImage(url: string): Promise<string | null> {
   }
 }
 
+const getKakaoOgImage = unstable_cache(
+  async (id: string) => fetchOgImage(`https://place.map.kakao.com/${id}`),
+  ["kakao-og-image"],
+  { revalidate: 86400 },
+);
+
 export async function GET(req: Request) {
-  await requireCurrentDbUser();
   const url = new URL(req.url);
   const parsed = QuerySchema.safeParse({
-    q: url.searchParams.get("q"),
     id: url.searchParams.get("id") ?? undefined,
   });
   if (!parsed.success) {
     return NextResponse.json({ error: "Bad query" }, { status: 400 });
   }
-  const { q, id } = parsed.data;
+  const { id } = parsed.data;
 
   if (!id || !/^\d+$/.test(id)) {
-    console.log(`[img] q=${q} id=${id} → skipped (no numeric id)`);
     return NextResponse.json({ url: null });
   }
 
-  const og = await fetchOgImage(`https://place.map.kakao.com/${id}`);
-  console.log(`[img] q=${q} id=${id} → og=${og}`);
-  if (!og) return NextResponse.json({ url: null });
-
-  return NextResponse.json({ url: og });
+  const og = await getKakaoOgImage(id);
+  return NextResponse.json(
+    { url: og ?? null },
+    {
+      headers: {
+        "Cache-Control":
+          "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+      },
+    },
+  );
 }

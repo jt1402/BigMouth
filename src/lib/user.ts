@@ -1,10 +1,11 @@
 import "server-only";
+import { cache } from "react";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { users, preferences, type User } from "@/db/schema";
 
-export async function getCurrentDbUser(): Promise<User | null> {
+export const getCurrentDbUser = cache(async (): Promise<User | null> => {
   const { userId: clerkId } = await auth();
   if (!clerkId) return null;
   const db = getDb();
@@ -21,7 +22,7 @@ export async function getCurrentDbUser(): Promise<User | null> {
     .returning();
   await db.insert(preferences).values({ userId: created.id });
   return created;
-}
+});
 
 export async function requireCurrentDbUser(): Promise<User> {
   const user = await getCurrentDbUser();

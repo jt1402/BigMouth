@@ -1,6 +1,5 @@
 "use client";
 
-import Script from "next/script";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { RestaurantImage } from "./RestaurantImage";
@@ -86,8 +85,6 @@ export function RecommendClient({
     }
   }
 
-  const kakaoKey = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY;
-
   const load = useCallback(async () => {
     setItems(null);
     setError(null);
@@ -143,13 +140,6 @@ export function RecommendClient({
 
   return (
     <>
-      {kakaoKey && (
-        <Script
-          src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false`}
-          strategy="afterInteractive"
-        />
-      )}
-
       <div className="mt-6 rounded-2xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200 dark:ring-zinc-800 p-4 sm:p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold">{t("filtersHeader")}</span>

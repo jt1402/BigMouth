@@ -30,13 +30,13 @@ function stripHtml(s: string) {
   return s.replace(/<[^>]+>/g, "");
 }
 
-function naverKatecToLatLng(mapx: string, mapy: string): {
+function naverCoordsToLatLng(mapx: string, mapy: string): {
   lat: number;
   lng: number;
 } {
   const x = Number(mapx);
   const y = Number(mapy);
-  if (x > 1000 && y > 1000 && x < 1_000_000_000) {
+  if (Math.abs(x) > 360 || Math.abs(y) > 90) {
     return { lng: x / 1e7, lat: y / 1e7 };
   }
   return { lng: x, lat: y };
@@ -75,7 +75,7 @@ export async function searchPlaces(opts: {
 
   const data: { items: NaverRawItem[] } = await res.json();
   return data.items.map((it, i) => {
-    const { lat, lng } = naverKatecToLatLng(it.mapx, it.mapy);
+    const { lat, lng } = naverCoordsToLatLng(it.mapx, it.mapy);
     const name = stripHtml(it.title);
     return {
       id: `${name}|${it.address}`.slice(0, 200),

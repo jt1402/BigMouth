@@ -1,0 +1,68 @@
+{
+  "App": {
+    "name": "빅마우스",
+    "tagline": "그만 고민하고 먹으러 가자."
+  },
+  "Nav": {
+    "home": "홈",
+    "recommend": "추천",
+    "history": "기록",
+    "preferences": "설정",
+    "signIn": "로그인",
+    "signOut": "로그아웃"
+  },
+  "Home": {
+    "title": "오늘 뭐 먹지?",
+    "subtitle": "최근에 안 간 근처 식당을 골라드릴게요.",
+    "useLocation": "내 위치 사용",
+    "locationDenied": "위치 권한이 차단됐어요. 브라우저에서 허용해 주세요.",
+    "locating": "위치 확인 중…",
+    "radius": "검색 반경",
+    "radiusMeters": "{meters} m",
+    "mealType": "어떤 종류가 끌려요?",
+    "anyMeal": "아무거나",
+    "submit": "추천받기",
+    "signInToStart": "로그인하면 방문 기록을 바탕으로 더 똑똑하게 추천해 드려요."
+  },
+  "Recommend": {
+    "title": "이거 어때요",
+    "empty": "근처에 새로운 곳이 없어요. 반경을 늘리거나 기록을 비워보세요.",
+    "again": "다시 고르기",
+    "markVisited": "여기서 먹었어요",
+    "rate": "평점",
+    "distance": "{meters} m",
+    "category": "분류",
+    "loading": "고르는 중…"
+  },
+  "History": {
+    "title": "방문 기록",
+    "empty": "아직 기록이 없어요.",
+    "visitedAt": "{date} 방문",
+    "yourRating": "내 평점: {rating}/5"
+  },
+  "Preferences": {
+    "title": "설정",
+    "favorites": "좋아하는 음식",
+    "dislikes": "싫어하는 음식",
+    "dietary": "식단",
+    "priceRange": "가격대",
+    "defaultRadius": "기본 검색 반경 (m)",
+    "historyWindow": "최근 며칠간 방문한 곳은 추천 안 함",
+    "save": "저장",
+    "saved": "저장됨.",
+    "cuisinePlaceholder": "한식, 일식, 중식 …",
+    "dietaryOptions": {
+      "vegetarian": "채식",
+      "vegan": "비건",
+      "halal": "할랄",
+      "gluten_free": "글루텐 프리",
+      "no_pork": "돼지고기 제외",
+      "no_beef": "소고기 제외"
+    }
+  },
+  "Common": {
+    "locale": "언어",
+    "english": "English",
+    "korean": "한국어"
+  }
+}

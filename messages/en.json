@@ -1,0 +1,68 @@
+{
+  "App": {
+    "name": "Big Mouth",
+    "tagline": "Stop arguing. Start eating."
+  },
+  "Nav": {
+    "home": "Home",
+    "recommend": "Recommend",
+    "history": "History",
+    "preferences": "Preferences",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  },
+  "Home": {
+    "title": "What's for lunch?",
+    "subtitle": "We'll pick a place near you that you haven't eaten at recently.",
+    "useLocation": "Use my location",
+    "locationDenied": "Location blocked. Enable location in your browser to continue.",
+    "locating": "Finding you…",
+    "radius": "Search radius",
+    "radiusMeters": "{meters} m",
+    "mealType": "What are you in the mood for?",
+    "anyMeal": "Anything",
+    "submit": "Find me food",
+    "signInToStart": "Sign in to track what you've eaten and get smarter picks."
+  },
+  "Recommend": {
+    "title": "Here's the plan",
+    "empty": "No new places nearby. Try widening the radius or clearing history.",
+    "again": "Pick again",
+    "markVisited": "I ate here",
+    "rate": "Rate",
+    "distance": "{meters} m away",
+    "category": "Category",
+    "loading": "Picking a place…"
+  },
+  "History": {
+    "title": "Where you've been",
+    "empty": "No visits yet.",
+    "visitedAt": "Visited {date}",
+    "yourRating": "Your rating: {rating}/5"
+  },
+  "Preferences": {
+    "title": "Preferences",
+    "favorites": "Favorite cuisines",
+    "dislikes": "Disliked cuisines",
+    "dietary": "Dietary",
+    "priceRange": "Price range",
+    "defaultRadius": "Default search radius (meters)",
+    "historyWindow": "Don't recommend places visited in the last (days)",
+    "save": "Save",
+    "saved": "Saved.",
+    "cuisinePlaceholder": "Korean, Japanese, Chinese, …",
+    "dietaryOptions": {
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "halal": "Halal",
+      "gluten_free": "Gluten free",
+      "no_pork": "No pork",
+      "no_beef": "No beef"
+    }
+  },
+  "Common": {
+    "locale": "Language",
+    "english": "English",
+    "korean": "한국어"
+  }
+}

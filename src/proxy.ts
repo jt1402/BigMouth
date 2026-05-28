@@ -20,12 +20,13 @@ const isProtectedApi = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
+  const isApi = req.nextUrl.pathname.startsWith("/api");
 
   if (!userId) {
-    if (isProtectedApi(req)) {
+    if (isApi && isProtectedApi(req)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    if (isProtectedPage(req)) {
+    if (!isApi && isProtectedPage(req)) {
       const url = req.nextUrl.clone();
       url.pathname = "/sign-in";
       url.searchParams.set("redirect_url", req.nextUrl.pathname + req.nextUrl.search);
@@ -33,6 +34,7 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 
+  if (isApi) return NextResponse.next();
   return intlMiddleware(req);
 });
 

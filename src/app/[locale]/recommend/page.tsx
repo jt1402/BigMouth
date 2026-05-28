@@ -28,12 +28,12 @@ export default async function RecommendPage({
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
+      <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+        {t("title")}
+      </h1>
       <Suspense
-        fallback={
-          <p className="mt-6 text-zinc-500">{t("loading")}</p>
-        }
+        fallback={<p className="mt-6 text-zinc-500">{t("loading")}</p>}
       >
         <RecommendClient lat={lat} lng={lng} radius={radius} query={query} />
       </Suspense>

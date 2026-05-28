@@ -24,7 +24,7 @@ export function HomeForm() {
   const [status, setStatus] = useState<"idle" | "locating" | "denied" | "ok">(
     "idle",
   );
-  const [radius, setRadius] = useState(800);
+  const [radius, setRadius] = useState(500);
   const [meal, setMeal] = useState<(typeof MEAL_TYPES)[number]["q"]>("");
 
   function locate() {
@@ -78,7 +78,7 @@ export function HomeForm() {
         <input
           type="range"
           min={300}
-          max={3000}
+          max={1000}
           step={100}
           value={radius}
           onChange={(e) => setRadius(Number(e.target.value))}

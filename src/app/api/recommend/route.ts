@@ -10,7 +10,7 @@ import { requireCurrentDbUser } from "@/lib/user";
 const BodySchema = z.object({
   lat: z.number().gte(-90).lte(90),
   lng: z.number().gte(-180).lte(180),
-  radius: z.number().int().min(100).max(5000).default(800),
+  radius: z.number().int().min(100).max(1000).default(500),
   query: z.string().max(50).default(""),
 });
 
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.message }, { status: 400 });
   }
-  const { lat, lng, query } = parsed.data;
+  const { lat, lng, query, radius } = parsed.data;
   const db = getDb();
 
   const [prefs, recent] = await Promise.all([
@@ -49,6 +49,7 @@ export async function POST(req: Request) {
 
   const items = recommend({
     origin: { lat, lng },
+    radiusM: radius,
     candidates: places,
     preferences: prefs ?? null,
     recentVisits: recent,

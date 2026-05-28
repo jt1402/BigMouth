@@ -9,6 +9,7 @@ export type Candidate = NaverPlace & {
 
 type RecommendArgs = {
   origin: { lat: number; lng: number };
+  radiusM: number;
   candidates: NaverPlace[];
   preferences: Pick<
     Preferences,
@@ -57,6 +58,7 @@ function topCategory(place: NaverPlace): string {
 
 export function recommend({
   origin,
+  radiusM,
   candidates,
   preferences,
   recentVisits,
@@ -85,7 +87,13 @@ export function recommend({
   const dislikes = preferences?.dislikedCuisines ?? [];
   const dietary = preferences?.dietary ?? [];
 
-  const scored: Candidate[] = candidates
+  const withDistance = candidates.map((p) => ({
+    ...p,
+    distanceM: haversineMeters(origin, { lat: p.lat, lng: p.lng }),
+  }));
+
+  const scored: Candidate[] = withDistance
+    .filter((p) => p.distanceM <= radiusM)
     .filter((p) => !visitedIds.has(p.id))
     .filter((p) => {
       const blob = `${p.name} ${p.category}`;
@@ -105,11 +113,7 @@ export function recommend({
       const recent = veryRecentTopCats.get(topCategory(p)) ?? 0;
       score -= recent * 2;
       score += Math.random();
-      return {
-        ...p,
-        distanceM: haversineMeters(origin, { lat: p.lat, lng: p.lng }),
-        score,
-      };
+      return { ...p, score };
     });
 
   scored.sort((a, b) => b.score - a.score);

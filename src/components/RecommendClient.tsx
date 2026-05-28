@@ -277,20 +277,20 @@ export function RecommendClient({
                     </p>
                   )}
                   <div className="mt-auto pt-3 grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => markVisited(c)}
-                      className="rounded-full bg-emerald-600 active:bg-emerald-700 text-white text-sm font-medium py-2.5"
-                    >
-                      {t("markVisited")}
-                    </button>
                     <a
                       href={kakaoWalkUrl(c)}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-full border border-zinc-300 dark:border-zinc-700 text-sm font-medium py-2.5 text-center active:bg-zinc-100 dark:active:bg-zinc-800"
+                      className="rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-sm font-semibold py-2.5 text-center transition"
                     >
                       {t("goThere")}
                     </a>
+                    <button
+                      onClick={() => markVisited(c)}
+                      className="rounded-full bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white text-sm font-semibold py-2.5 transition"
+                    >
+                      {t("markVisited")}
+                    </button>
                   </div>
                 </div>
               </li>

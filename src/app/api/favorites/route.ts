@@ -47,17 +47,18 @@ export async function DELETE(req: Request) {
   const user = await requireCurrentDbUser();
   const url = new URL(req.url);
   const placeId = url.searchParams.get("kakaoPlaceId");
-  if (!placeId) {
-    return NextResponse.json({ error: "kakaoPlaceId required" }, { status: 400 });
-  }
   const db = getDb();
-  await db
-    .delete(favorites)
-    .where(
-      and(
-        eq(favorites.userId, user.id),
-        eq(favorites.kakaoPlaceId, placeId),
-      ),
-    );
+  if (placeId) {
+    await db
+      .delete(favorites)
+      .where(
+        and(
+          eq(favorites.userId, user.id),
+          eq(favorites.kakaoPlaceId, placeId),
+        ),
+      );
+  } else {
+    await db.delete(favorites).where(eq(favorites.userId, user.id));
+  }
   return NextResponse.json({ ok: true });
 }

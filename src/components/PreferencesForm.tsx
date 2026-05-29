@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { InfoTooltip } from "./InfoTooltip";
 
 type Initial = {
   favoriteCuisines: string[];
   dislikedCuisines: string[];
   dietary: string[];
-  defaultRadiusM: number;
   historyWindowDays: number;
 };
 
@@ -25,7 +25,6 @@ export function PreferencesForm({ initial }: { initial: Initial }) {
   const [favorites, setFavorites] = useState(initial.favoriteCuisines.join(", "));
   const [dislikes, setDislikes] = useState(initial.dislikedCuisines.join(", "));
   const [dietary, setDietary] = useState<string[]>(initial.dietary);
-  const [radius, setRadius] = useState(initial.defaultRadiusM);
   const [windowDays, setWindowDays] = useState(initial.historyWindowDays);
   const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
 
@@ -50,7 +49,6 @@ export function PreferencesForm({ initial }: { initial: Initial }) {
           .map((s) => s.trim())
           .filter(Boolean),
         dietary,
-        defaultRadiusM: radius,
         historyWindowDays: windowDays,
       }),
     });
@@ -58,30 +56,36 @@ export function PreferencesForm({ initial }: { initial: Initial }) {
     setTimeout(() => setStatus("idle"), 1500);
   }
 
+  const inputCls =
+    "rounded-2xl ring-2 ring-zinc-950/10 dark:ring-zinc-100/10 bg-white dark:bg-zinc-900 px-4 py-2.5 font-semibold focus:ring-amber-300 focus:outline-none transition";
+
   return (
     <div className="mt-8 flex flex-col gap-6">
       <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium">{t("favorites")}</span>
+        <span className="text-sm font-bold">{t("favorites")}</span>
         <input
           value={favorites}
           onChange={(e) => setFavorites(e.target.value)}
           placeholder={t("cuisinePlaceholder")}
-          className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2"
+          className={inputCls}
         />
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium">{t("dislikes")}</span>
+        <span className="text-sm font-bold">{t("dislikes")}</span>
         <input
           value={dislikes}
           onChange={(e) => setDislikes(e.target.value)}
           placeholder={t("cuisinePlaceholder")}
-          className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2"
+          className={inputCls}
         />
       </label>
 
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium">{t("dietary")}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold">{t("dietary")}</span>
+          <InfoTooltip message={t("dietaryHint")} />
+        </div>
         <div className="flex flex-wrap gap-2">
           {DIETARY_KEYS.map((k) => (
             <button
@@ -89,10 +93,10 @@ export function PreferencesForm({ initial }: { initial: Initial }) {
               key={k}
               onClick={() => toggleDietary(k)}
               className={
-                "px-3 py-1.5 rounded-full border text-sm " +
+                "px-4 py-1.5 rounded-full text-sm font-bold transition active:translate-y-0.5 " +
                 (dietary.includes(k)
-                  ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-transparent"
-                  : "border-zinc-300 dark:border-zinc-700")
+                  ? "bg-amber-300 text-zinc-950 shadow-[0_2px_0_0_rgba(0,0,0,0.12)]"
+                  : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700")
               }
             >
               {t(`dietaryOptions.${k}`)}
@@ -102,27 +106,14 @@ export function PreferencesForm({ initial }: { initial: Initial }) {
       </div>
 
       <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium">{t("defaultRadius")}</span>
-        <input
-          type="number"
-          min={300}
-          max={5000}
-          step={100}
-          value={radius}
-          onChange={(e) => setRadius(Number(e.target.value))}
-          className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 w-32"
-        />
-      </label>
-
-      <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium">{t("historyWindow")}</span>
+        <span className="text-sm font-bold">{t("historyWindow")}</span>
         <input
           type="number"
           min={0}
           max={90}
           value={windowDays}
           onChange={(e) => setWindowDays(Number(e.target.value))}
-          className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 w-32"
+          className={`${inputCls} w-32`}
         />
       </label>
 
@@ -130,12 +121,14 @@ export function PreferencesForm({ initial }: { initial: Initial }) {
         <button
           onClick={save}
           disabled={status === "saving"}
-          className="rounded-md bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 font-medium disabled:opacity-60"
+          className="rounded-full bg-zinc-950 dark:bg-amber-300 text-amber-200 dark:text-zinc-950 px-6 py-3 text-sm font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.15)] active:translate-y-0.5 active:shadow-none transition disabled:opacity-60"
         >
           {t("save")}
         </button>
         {status === "saved" && (
-          <span className="text-sm text-emerald-600">{t("saved")}</span>
+          <span className="text-sm font-bold text-emerald-600">
+            ✓ {t("saved")}
+          </span>
         )}
       </div>
     </div>

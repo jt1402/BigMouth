@@ -22,13 +22,14 @@ export default async function PreferencesPage({
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
+      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+        {t("title")}
+      </h1>
       <PreferencesForm
         initial={{
           favoriteCuisines: prefs?.favoriteCuisines ?? [],
           dislikedCuisines: prefs?.dislikedCuisines ?? [],
           dietary: prefs?.dietary ?? [],
-          defaultRadiusM: user.defaultRadiusM,
           historyWindowDays: user.historyWindowDays,
         }}
       />

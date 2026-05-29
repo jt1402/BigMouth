@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations, useFormatter } from "next-intl";
-import type { Favorite } from "@/db/schema";
+import type { Visit } from "@/db/schema";
 
-export function FavoritesList({ initial }: { initial: Favorite[] }) {
-  const t = useTranslations("Favorites");
+export function HistoryList({ initial }: { initial: Visit[] }) {
+  const t = useTranslations("History");
   const fmt = useFormatter();
   const [rows, setRows] = useState(initial);
   const [confirmClear, setConfirmClear] = useState(false);
@@ -23,35 +23,31 @@ export function FavoritesList({ initial }: { initial: Favorite[] }) {
     );
   }, []);
 
-  async function remove(f: Favorite) {
-    setRows((prev) => prev.filter((x) => x.kakaoPlaceId !== f.kakaoPlaceId));
-    await fetch(
-      `/api/favorites?kakaoPlaceId=${encodeURIComponent(f.kakaoPlaceId)}`,
-      { method: "DELETE" },
-    );
+  async function remove(v: Visit) {
+    setRows((prev) => prev.filter((x) => x.id !== v.id));
+    await fetch(`/api/visits?id=${v.id}`, { method: "DELETE" });
   }
 
   async function clearAll() {
     setRows([]);
     setConfirmClear(false);
-    await fetch("/api/favorites", { method: "DELETE" });
+    await fetch("/api/visits", { method: "DELETE" });
   }
 
-  function placeUrl(f: Favorite) {
-    if (f.link) return f.link.replace(/^http:\/\//, "https://");
-    if (/^\d+$/.test(f.kakaoPlaceId)) {
-      return `https://place.map.kakao.com/${f.kakaoPlaceId}`;
+  function placeUrl(v: Visit) {
+    if (/^\d+$/.test(v.naverPlaceId)) {
+      return `https://place.map.kakao.com/${v.naverPlaceId}`;
     }
-    return `https://map.kakao.com/link/search/${encodeURIComponent(f.name)}`;
+    return `https://map.kakao.com/link/search/${encodeURIComponent(v.name)}`;
   }
 
-  function walkUrl(f: Favorite) {
-    if (coords && f.lat != null && f.lng != null) {
+  function goAgainUrl(v: Visit) {
+    if (coords && v.lat != null && v.lng != null) {
       const origin = `${encodeURIComponent("내 위치")},${coords.lat},${coords.lng}`;
-      const dest = `${encodeURIComponent(f.name)},${f.lat},${f.lng}`;
+      const dest = `${encodeURIComponent(v.name)},${v.lat},${v.lng}`;
       return `https://map.kakao.com/link/by/walk/${origin}/${dest}`;
     }
-    return placeUrl(f);
+    return placeUrl(v);
   }
 
   if (rows.length === 0) {
@@ -90,61 +86,68 @@ export function FavoritesList({ initial }: { initial: Favorite[] }) {
       </div>
 
       <ul className="flex flex-col">
-        {rows.map((f) => (
+        {rows.map((v) => (
           <li
-            key={f.id}
+            key={v.id}
             className="flex gap-3 sm:gap-4 py-4 border-b border-zinc-200 dark:border-zinc-800 last:border-b-0"
           >
             <div className="flex-1 min-w-0 flex flex-col gap-1">
               <a
-                href={placeUrl(f)}
+                href={placeUrl(v)}
                 target="_blank"
                 rel="noreferrer"
                 className="font-extrabold text-base sm:text-lg leading-tight hover:underline truncate"
               >
-                {f.name}
+                {v.name}
               </a>
-              {f.category && (
+              {v.category && (
                 <p className="text-xs sm:text-sm text-zinc-500 font-semibold truncate">
-                  {f.category}
+                  {v.category}
                 </p>
               )}
-              {f.address && (
+              {v.address && (
                 <p className="text-xs text-zinc-500 line-clamp-1">
-                  {f.address}
+                  {v.address}
                 </p>
               )}
-              <p className="text-xs text-zinc-500 font-semibold">
-                {t("savedAt", {
-                  date: fmt.dateTime(new Date(f.likedAt), {
-                    dateStyle: "medium",
-                  }),
-                })}
-              </p>
+              <div className="flex items-center gap-2 text-xs text-zinc-500 font-semibold">
+                <span>
+                  {t("visitedAt", {
+                    date: fmt.dateTime(new Date(v.visitedAt), {
+                      dateStyle: "medium",
+                    }),
+                  })}
+                </span>
+                {v.rating != null && (
+                  <span aria-label={`${v.rating}/5`}>
+                    {v.rating >= 4 ? "👍" : v.rating <= 2 ? "👎" : "😐"}
+                  </span>
+                )}
+              </div>
               <div className="mt-2 flex flex-wrap gap-2">
                 <a
-                  href={walkUrl(f)}
+                  href={goAgainUrl(v)}
                   target="_blank"
                   rel="noreferrer"
                   className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:translate-y-0.5 active:shadow-none transition"
                 >
-                  ↗ {t("directions")}
+                  ↗ {t("goAgain")}
                 </a>
                 <button
-                  onClick={() => remove(f)}
+                  onClick={() => remove(v)}
                   className="rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-bold px-3 py-1.5 transition"
                 >
-                  💔 {t("remove")}
+                  ✕ {t("remove")}
                 </button>
               </div>
             </div>
             <a
-              href={placeUrl(f)}
+              href={placeUrl(v)}
               target="_blank"
               rel="noreferrer"
               className="shrink-0 self-center w-32 sm:w-44 aspect-square"
             >
-              <Thumb id={f.kakaoPlaceId} name={f.name} />
+              <Thumb id={v.naverPlaceId} name={v.name} />
             </a>
           </li>
         ))}
@@ -187,7 +190,7 @@ function Thumb({ id, name }: { id: string; name: string }) {
       <div
         className={`${base} bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-2xl`}
       >
-        ❤️
+        🍽️
       </div>
     );
   }

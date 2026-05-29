@@ -36,7 +36,7 @@ export function MobileNav({
         aria-label="Menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="size-9 rounded-md flex items-center justify-center text-zinc-700 dark:text-zinc-300 active:bg-zinc-100 dark:active:bg-zinc-800"
+        className="size-9 rounded-full flex items-center justify-center text-zinc-900 dark:text-zinc-100 active:bg-zinc-100 dark:active:bg-zinc-800"
       >
         <svg
           width="22"
@@ -44,7 +44,7 @@ export function MobileNav({
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
@@ -71,19 +71,30 @@ export function MobileNav({
             onClick={() => setOpen(false)}
           >
             <nav
-              className="flex flex-col gap-1 p-4 text-lg font-medium"
+              className="flex flex-col gap-1 p-4 text-lg font-bold"
               onClick={(e) => e.stopPropagation()}
             >
-              {links.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className="px-3 py-3 rounded-lg active:bg-zinc-100 dark:active:bg-zinc-800"
-                >
-                  {l.label}
-                </Link>
-              ))}
-              <div className="mt-4 px-3">
+              {links.map((l) => {
+                const active =
+                  pathname === l.href || pathname.startsWith(`${l.href}/`);
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    aria-current={active ? "page" : undefined}
+                    className={
+                      "px-4 py-3.5 rounded-2xl transition flex items-center justify-between " +
+                      (active
+                        ? "bg-amber-300 text-zinc-950 shadow-[0_3px_0_0_rgba(0,0,0,0.12)]"
+                        : "text-zinc-800 dark:text-zinc-200 active:bg-zinc-100 dark:active:bg-zinc-800")
+                    }
+                  >
+                    <span>{l.label}</span>
+                    {active && <span aria-hidden>→</span>}
+                  </Link>
+                );
+              })}
+              <div className="mt-6 px-2">
                 <LocaleSwitcher />
               </div>
             </nav>

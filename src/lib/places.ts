@@ -47,37 +47,8 @@ type KakaoDoc = {
   distance?: string;
 };
 
-export async function searchPlaces(opts: {
-  query: string;
-  lat: number;
-  lng: number;
-  radiusM: number;
-  limit?: number;
-}): Promise<Place[]> {
-  const key = process.env.KAKAO_REST_API_KEY;
-  if (!key) return mockPlaces(opts);
-
-  const params = new URLSearchParams({
-    query: opts.query || "맛집",
-    x: String(opts.lng),
-    y: String(opts.lat),
-    radius: String(Math.min(opts.radiusM, 20000)),
-    sort: "distance",
-    size: String(Math.min(opts.limit ?? 15, 15)),
-    category_group_code: "FD6",
-  });
-
-  const res = await fetch(`${KAKAO_SEARCH_URL}?${params}`, {
-    headers: { Authorization: `KakaoAK ${key}` },
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error(`Kakao Local search failed: ${res.status}`);
-  }
-
-  const data: { documents: KakaoDoc[] } = await res.json();
-  return data.documents.map((d) => ({
+function mapKakaoDoc(d: KakaoDoc): Place {
+  return {
     id: d.id,
     name: d.place_name,
     category: d.category_name,
@@ -88,7 +59,72 @@ export async function searchPlaces(opts: {
     link: d.place_url,
     telephone: d.phone,
     distanceM: d.distance ? Number(d.distance) : undefined,
-  }));
+  };
+}
+
+async function fetchKakaoPage(
+  opts: { query: string; lat: number; lng: number; radiusM: number },
+  key: string,
+  page: number,
+  sort: "distance" | "accuracy",
+): Promise<Place[]> {
+  const params = new URLSearchParams({
+    query: opts.query || "맛집",
+    x: String(opts.lng),
+    y: String(opts.lat),
+    radius: String(Math.min(opts.radiusM, 20000)),
+    sort,
+    size: "15",
+    page: String(page),
+    category_group_code: "FD6",
+  });
+  const res = await fetch(`${KAKAO_SEARCH_URL}?${params}`, {
+    headers: { Authorization: `KakaoAK ${key}` },
+    cache: "no-store",
+  });
+  if (!res.ok) return [];
+  const data: { documents?: KakaoDoc[] } = await res.json();
+  return (data.documents ?? []).map(mapKakaoDoc);
+}
+
+export async function searchPlaces(opts: {
+  query: string;
+  lat: number;
+  lng: number;
+  radiusM: number;
+  limit?: number;
+}): Promise<Place[]> {
+  const key = process.env.KAKAO_REST_API_KEY;
+  if (!key) return mockPlaces(opts);
+
+  const target = Math.min(opts.limit ?? 200, 300);
+
+  const queries: Promise<Place[]>[] = [];
+  for (let p = 1; p <= 10; p++) {
+    queries.push(fetchKakaoPage(opts, key, p, "distance"));
+  }
+  for (let p = 1; p <= 5; p++) {
+    queries.push(fetchKakaoPage(opts, key, p, "accuracy"));
+  }
+  if (!opts.query || opts.query === "맛집") {
+    for (let p = 1; p <= 3; p++) {
+      queries.push(
+        fetchKakaoPage({ ...opts, query: "음식점" }, key, p, "distance"),
+      );
+    }
+  }
+  const pages = await Promise.all(queries);
+
+  const seen = new Set<string>();
+  const all: Place[] = [];
+  for (const page of pages) {
+    for (const p of page) {
+      if (seen.has(p.id)) continue;
+      seen.add(p.id);
+      all.push(p);
+    }
+  }
+  return all.slice(0, target);
 }
 
 function mockPlaces(opts: { lat: number; lng: number; query: string }): Place[] {

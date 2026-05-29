@@ -23,7 +23,14 @@ export default async function RecommendPage({
 
   const lat = sp.lat ? Number(sp.lat) : null;
   const lng = sp.lng ? Number(sp.lng) : null;
-  const radius = sp.r ? Math.min(Number(sp.r), 1000) : 500;
+  const radius: 300 | 500 | 800 | 1000 | "auto" = (() => {
+    if (sp.r === "auto") return "auto";
+    const n = sp.r ? Number(sp.r) : 500;
+    if (n <= 300) return 300;
+    if (n <= 500) return 500;
+    if (n <= 800) return 800;
+    return 1000;
+  })();
   const query = sp.q ?? "";
   const sortRaw = sp.sort ?? "smart";
   const sort: "smart" | "distance" | "popular" | "random" =
@@ -37,7 +44,7 @@ export default async function RecommendPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
-      <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
         {t("title")}
       </h1>
       <Suspense

@@ -29,6 +29,12 @@ export async function generateMetadata({
   return {
     title: t("name"),
     description: t("tagline"),
+    appleWebApp: {
+      capable: true,
+      title: t("name"),
+      statusBarStyle: "default",
+    },
+    themeColor: "#fde68a",
   };
 }
 

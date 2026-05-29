@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { visits } from "@/db/schema";
 import { requireCurrentDbUser } from "@/lib/user";
@@ -26,4 +27,23 @@ export async function POST(req: Request) {
     .values({ userId: user.id, ...parsed.data })
     .returning();
   return NextResponse.json({ visit: row });
+}
+
+export async function DELETE(req: Request) {
+  const user = await requireCurrentDbUser();
+  const url = new URL(req.url);
+  const idRaw = url.searchParams.get("id");
+  const db = getDb();
+  if (idRaw) {
+    const id = Number(idRaw);
+    if (!Number.isFinite(id)) {
+      return NextResponse.json({ error: "Bad id" }, { status: 400 });
+    }
+    await db
+      .delete(visits)
+      .where(and(eq(visits.userId, user.id), eq(visits.id, id)));
+  } else {
+    await db.delete(visits).where(eq(visits.userId, user.id));
+  }
+  return NextResponse.json({ ok: true });
 }

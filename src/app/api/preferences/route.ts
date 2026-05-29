@@ -9,7 +9,6 @@ const BodySchema = z.object({
   favoriteCuisines: z.array(z.string().min(1).max(40)).max(20),
   dislikedCuisines: z.array(z.string().min(1).max(40)).max(20),
   dietary: z.array(z.string().min(1).max(40)).max(10),
-  defaultRadiusM: z.number().int().min(300).max(5000),
   historyWindowDays: z.number().int().min(0).max(90),
 });
 
@@ -19,7 +18,7 @@ export async function PUT(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.message }, { status: 400 });
   }
-  const { defaultRadiusM, historyWindowDays, ...prefs } = parsed.data;
+  const { historyWindowDays, ...prefs } = parsed.data;
   const db = getDb();
 
   await Promise.all([
@@ -29,7 +28,7 @@ export async function PUT(req: Request) {
       .onConflictDoUpdate({ target: preferences.userId, set: prefs }),
     db
       .update(users)
-      .set({ defaultRadiusM, historyWindowDays })
+      .set({ historyWindowDays })
       .where(eq(users.id, user.id)),
   ]);
 

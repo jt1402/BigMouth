@@ -1,5 +1,8 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
+import { eq } from "drizzle-orm";
+import { getDb } from "@/db";
+import { placePhotos } from "@/db/schema";
 
 export type Place = {
   id: string;
@@ -185,9 +188,37 @@ async function fetchOgImage(url: string): Promise<string | null> {
   }
 }
 
+const REFRESH_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
+
+async function lookupOrScrape(id: string): Promise<string | null> {
+  if (!/^\d+$/.test(id)) return null;
+  const db = getDb();
+  try {
+    const row = await db.query.placePhotos.findFirst({
+      where: eq(placePhotos.kakaoPlaceId, id),
+    });
+    if (row) {
+      const stale =
+        Date.now() - new Date(row.checkedAt).getTime() > REFRESH_AFTER_MS;
+      if (row.imageUrl && !stale) return row.imageUrl;
+    }
+    const fresh = await fetchOgImage(`https://place.map.kakao.com/${id}`);
+    await db
+      .insert(placePhotos)
+      .values({ kakaoPlaceId: id, imageUrl: fresh, checkedAt: new Date() })
+      .onConflictDoUpdate({
+        target: placePhotos.kakaoPlaceId,
+        set: { imageUrl: fresh, checkedAt: new Date() },
+      });
+    return fresh ?? row?.imageUrl ?? null;
+  } catch {
+    return fetchOgImage(`https://place.map.kakao.com/${id}`);
+  }
+}
+
 export const getKakaoOgImage = unstable_cache(
-  async (id: string) => fetchOgImage(`https://place.map.kakao.com/${id}`),
-  ["kakao-og-image"],
+  async (id: string) => lookupOrScrape(id),
+  ["kakao-og-image-v2"],
   { revalidate: 86400 },
 );
 

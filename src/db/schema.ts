@@ -91,6 +91,14 @@ export const favorites = pgTable(
   ],
 );
 
+export const placePhotos = pgTable("place_photos", {
+  kakaoPlaceId: text("kakao_place_id").primaryKey(),
+  imageUrl: text("image_url"),
+  checkedAt: timestamp("checked_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export type User = typeof users.$inferSelect;
 export type Preferences = typeof preferences.$inferSelect;
 export type Visit = typeof visits.$inferSelect;

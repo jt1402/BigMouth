@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { MiniMap } from "./MiniMap";
 
@@ -52,16 +53,16 @@ export function RestaurantImage({
     return <MiniMap center={center} />;
   }
 
-  const proxied = `/api/img?u=${encodeURIComponent(url)}`;
-
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={proxied}
-      alt={name}
-      loading="lazy"
-      onError={() => setUrl(null)}
-      className="aspect-[16/9] w-full object-cover bg-zinc-200 dark:bg-zinc-800"
-    />
+    <div className="relative aspect-[16/9] w-full bg-zinc-200 dark:bg-zinc-800">
+      <Image
+        src={url}
+        alt={name}
+        fill
+        sizes="(min-width: 640px) 384px, 100vw"
+        className="object-cover"
+        onError={() => setUrl(null)}
+      />
+    </div>
   );
 }

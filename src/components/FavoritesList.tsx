@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useTranslations, useFormatter } from "next-intl";
 import type { Favorite } from "@/db/schema";
@@ -192,13 +193,15 @@ function Thumb({ id, name }: { id: string; name: string }) {
     );
   }
   return (
-    <img
-      // eslint-disable-next-line @next/next/no-img-element
-      src={`/api/img?u=${encodeURIComponent(url)}`}
-      alt={name}
-      loading="lazy"
-      onError={() => setUrl(null)}
-      className={`${base} object-cover`}
-    />
+    <div className={`${base} relative bg-zinc-200 dark:bg-zinc-800`}>
+      <Image
+        src={url}
+        alt={name}
+        fill
+        sizes="(min-width: 640px) 176px, 128px"
+        className="object-cover"
+        onError={() => setUrl(null)}
+      />
+    </div>
   );
 }

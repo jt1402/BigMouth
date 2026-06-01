@@ -9,14 +9,22 @@ export function RestaurantImage({
   id,
   name,
   center,
+  imageUrl,
 }: {
   id: string;
   name: string;
   center: LatLng;
+  imageUrl?: string | null;
 }) {
-  const [url, setUrl] = useState<string | null | undefined>(undefined);
+  const initial =
+    imageUrl === undefined ? undefined : (imageUrl as string | null);
+  const [url, setUrl] = useState<string | null | undefined>(initial);
 
   useEffect(() => {
+    if (imageUrl !== undefined) {
+      setUrl(imageUrl);
+      return;
+    }
     let cancelled = false;
     const controller = new AbortController();
     const params = new URLSearchParams({ id, q: `${name} 음식` });
@@ -32,7 +40,7 @@ export function RestaurantImage({
       cancelled = true;
       controller.abort();
     };
-  }, [id, name]);
+  }, [id, name, imageUrl]);
 
   if (url === undefined) {
     return (

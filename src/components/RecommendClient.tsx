@@ -305,6 +305,7 @@ export function RecommendClient({
                       id={c.id}
                       name={c.name}
                       center={{ lat: c.lat, lng: c.lng }}
+                      imageUrl={c.imageUrl}
                     />
                   </a>
                   <div className="absolute top-2 right-2 flex gap-2">

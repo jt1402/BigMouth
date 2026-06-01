@@ -3,7 +3,11 @@ import { z } from "zod";
 import { and, eq, gte } from "drizzle-orm";
 import { getDb } from "@/db";
 import { favorites, preferences, visits } from "@/db/schema";
-import { countBlogMentions, searchPlaces } from "@/lib/places";
+import {
+  countBlogMentions,
+  getKakaoOgImage,
+  searchPlaces,
+} from "@/lib/places";
 import { recommend, type Candidate } from "@/lib/recommender";
 import { requireCurrentDbUser } from "@/lib/user";
 
@@ -87,10 +91,19 @@ export async function POST(req: Request) {
   }
 
   if (sort === "popular" || items.length > 0) {
-    const counts = await Promise.all(
-      items.map((it) => countBlogMentions(it.name)),
-    );
-    items = items.map((it, i) => ({ ...it, reviewCount: counts[i] }));
+    const [counts, images] = await Promise.all([
+      Promise.all(items.map((it) => countBlogMentions(it.name))),
+      Promise.all(
+        items.map((it) =>
+          /^\d+$/.test(it.id) ? getKakaoOgImage(it.id) : Promise.resolve(null),
+        ),
+      ),
+    ]);
+    items = items.map((it, i) => ({
+      ...it,
+      reviewCount: counts[i],
+      imageUrl: images[i],
+    }));
   }
 
   if (sort === "distance") {

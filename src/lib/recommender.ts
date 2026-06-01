@@ -6,6 +6,7 @@ export type Candidate = Place & {
   distanceM: number;
   score: number;
   reviewCount?: number;
+  imageUrl?: string | null;
 };
 
 type RecommendArgs = {

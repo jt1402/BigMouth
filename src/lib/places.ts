@@ -108,8 +108,9 @@ export async function searchPlaces(opts: {
   if (!key) return mockPlaces(opts);
 
   const target = Math.min(opts.limit ?? 200, 300);
-  const isCafe = opts.query === "카페";
-  const categoryGroupCode = isCafe ? "CE7" : "FD6";
+  const CE7_QUERIES = new Set(["카페", "베이커리", "디저트"]);
+  const isCE7 = CE7_QUERIES.has(opts.query);
+  const categoryGroupCode = isCE7 ? "CE7" : "FD6";
 
   const queries: Promise<Place[]>[] = [];
   for (let p = 1; p <= 10; p++) {
@@ -122,18 +123,7 @@ export async function searchPlaces(opts: {
       fetchKakaoPage({ ...opts, categoryGroupCode }, key, p, "accuracy"),
     );
   }
-  if (isCafe) {
-    for (let p = 1; p <= 3; p++) {
-      queries.push(
-        fetchKakaoPage(
-          { ...opts, query: "카페", categoryGroupCode: "CE7" },
-          key,
-          p,
-          "accuracy",
-        ),
-      );
-    }
-  } else if (!opts.query || opts.query === "맛집") {
+  if (!isCE7 && (!opts.query || opts.query === "맛집")) {
     for (let p = 1; p <= 3; p++) {
       queries.push(
         fetchKakaoPage(

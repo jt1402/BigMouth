@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { RestaurantImage } from "./RestaurantImage";
 import type { Candidate } from "@/lib/recommender";
 
@@ -11,14 +11,23 @@ const SORT_OPTIONS = ["smart", "distance", "popular", "random"] as const;
 type SortKey = (typeof SORT_OPTIONS)[number];
 
 const MEAL_TYPES = [
-  { key: "any", q: "" },
-  { key: "한식", q: "한식" },
-  { key: "일식", q: "일식" },
-  { key: "중식", q: "중식" },
-  { key: "양식", q: "양식" },
-  { key: "분식", q: "분식" },
-  { key: "치킨", q: "치킨" },
-  { key: "카페", q: "카페" },
+  { key: "any", q: "", en: "Anything" },
+  { key: "한식", q: "한식", en: "Korean" },
+  { key: "일식", q: "일식", en: "Japanese" },
+  { key: "중식", q: "중식", en: "Chinese" },
+  { key: "양식", q: "양식", en: "Western" },
+  { key: "분식", q: "분식", en: "Snacks" },
+  { key: "치킨", q: "치킨", en: "Chicken" },
+  { key: "회", q: "회", en: "Sashimi" },
+  { key: "족발,보쌈", q: "족발,보쌈", en: "Jokbal" },
+  { key: "국밥", q: "국밥", en: "Gukbap" },
+  { key: "도시락", q: "도시락", en: "Lunch box" },
+  { key: "패스트푸드", q: "패스트푸드", en: "Fast food" },
+  { key: "베트남식", q: "베트남식", en: "Vietnamese" },
+  { key: "술집", q: "술집", en: "Bar" },
+  { key: "카페", q: "카페", en: "Cafe" },
+  { key: "베이커리", q: "베이커리", en: "Bakery" },
+  { key: "디저트", q: "디저트", en: "Dessert" },
 ] as const;
 
 export function RecommendClient({
@@ -35,6 +44,7 @@ export function RecommendClient({
   sort: SortKey;
 }) {
   const t = useTranslations("Recommend");
+  const locale = useLocale();
   const [items, setItems] = useState<Candidate[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [radius, setRadius] = useState<Radius>(initialRadius);
@@ -244,7 +254,11 @@ export function RecommendClient({
                   : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700")
               }
             >
-              {m.key === "any" ? t("anyMeal") : m.key}
+              {m.key === "any"
+                ? t("anyMeal")
+                : locale === "en"
+                  ? m.en
+                  : m.key}
             </button>
           ))}
         </div>

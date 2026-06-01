@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
@@ -34,9 +34,12 @@ export async function generateMetadata({
       title: t("name"),
       statusBarStyle: "default",
     },
-    themeColor: "#fde68a",
   };
 }
+
+export const viewport: Viewport = {
+  themeColor: "#fde68a",
+};
 
 export default async function LocaleLayout({
   children,

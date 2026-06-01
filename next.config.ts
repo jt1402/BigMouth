@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.naver.net" },
       { protocol: "https", hostname: "img1.kakaocdn.net" },
       { protocol: "https", hostname: "t1.daumcdn.net" },
+      { protocol: "http", hostname: "staticmap.kakao.com" },
+      { protocol: "https", hostname: "staticmap.kakao.com" },
     ],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },

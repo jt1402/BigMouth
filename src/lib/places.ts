@@ -67,7 +67,13 @@ function mapKakaoDoc(d: KakaoDoc): Place {
 }
 
 async function fetchKakaoPage(
-  opts: { query: string; lat: number; lng: number; radiusM: number },
+  opts: {
+    query: string;
+    lat: number;
+    lng: number;
+    radiusM: number;
+    categoryGroupCode?: string;
+  },
   key: string,
   page: number,
   sort: "distance" | "accuracy",
@@ -80,7 +86,7 @@ async function fetchKakaoPage(
     sort,
     size: "15",
     page: String(page),
-    category_group_code: "FD6",
+    category_group_code: opts.categoryGroupCode ?? "FD6",
   });
   const res = await fetch(`${KAKAO_SEARCH_URL}?${params}`, {
     headers: { Authorization: `KakaoAK ${key}` },
@@ -102,18 +108,40 @@ export async function searchPlaces(opts: {
   if (!key) return mockPlaces(opts);
 
   const target = Math.min(opts.limit ?? 200, 300);
+  const isCafe = opts.query === "카페";
+  const categoryGroupCode = isCafe ? "CE7" : "FD6";
 
   const queries: Promise<Place[]>[] = [];
   for (let p = 1; p <= 10; p++) {
-    queries.push(fetchKakaoPage(opts, key, p, "distance"));
+    queries.push(
+      fetchKakaoPage({ ...opts, categoryGroupCode }, key, p, "distance"),
+    );
   }
   for (let p = 1; p <= 5; p++) {
-    queries.push(fetchKakaoPage(opts, key, p, "accuracy"));
+    queries.push(
+      fetchKakaoPage({ ...opts, categoryGroupCode }, key, p, "accuracy"),
+    );
   }
-  if (!opts.query || opts.query === "맛집") {
+  if (isCafe) {
     for (let p = 1; p <= 3; p++) {
       queries.push(
-        fetchKakaoPage({ ...opts, query: "음식점" }, key, p, "distance"),
+        fetchKakaoPage(
+          { ...opts, query: "카페", categoryGroupCode: "CE7" },
+          key,
+          p,
+          "accuracy",
+        ),
+      );
+    }
+  } else if (!opts.query || opts.query === "맛집") {
+    for (let p = 1; p <= 3; p++) {
+      queries.push(
+        fetchKakaoPage(
+          { ...opts, query: "음식점", categoryGroupCode: "FD6" },
+          key,
+          p,
+          "distance",
+        ),
       );
     }
   }
